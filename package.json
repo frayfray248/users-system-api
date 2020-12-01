@@ -1,0 +1,19 @@
+{
+  "name": "users-system-api",
+  "version": "0.0.1",
+  "description": "An REST API for handling account creation and sesssions in a system",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frayfray248/users-system-api.git"
+  },
+  "author": "frayfray",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/frayfray248/users-system-api/issues"
+  },
+  "homepage": "https://github.com/frayfray248/users-system-api#readme"
+}
