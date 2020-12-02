@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
+require('./db');
 
 // routes
 const usersRoute = require('./api/routes/users');
