@@ -1,6 +1,6 @@
 {
   "name": "users-system-api",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "An REST API for handling account creation and sesssions in a system",
   "main": "app.js",
   "scripts": {
