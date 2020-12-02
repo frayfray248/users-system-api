@@ -27,6 +27,13 @@ exports.addUser = (req, res, next) => {
                 throw new Error('Email exists');
             }
 
+            // exisitng username check
+            const existingUsernameUser = await User.find({ username: req.body.username }).exec();
+
+            if (existingUsernameUser.length > 0) {
+                throw new Error('Username exists');
+            }
+
             // create new user model instance
             const newUser = new User({
                 _id: new mongoose.Types.ObjectId(),
