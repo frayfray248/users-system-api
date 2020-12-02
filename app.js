@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
+const bodyParser = require('body-parser');
 require('./db');
 
 // routes
@@ -13,6 +14,10 @@ const port = process.env.PORT;
 // instances
 const app = express();
 const server = http.createServer(app);
+
+// middleware
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 // users route
 app.use('/users', usersRoute);
