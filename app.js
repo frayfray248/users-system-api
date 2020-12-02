@@ -1,3 +1,4 @@
+//imports
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -8,7 +9,7 @@ const usersRoute = require('./api/routes/users');
 // port
 const port = process.env.PORT;
 
-// app object instances
+// instances
 const app = express();
 const server = http.createServer(app);
 
