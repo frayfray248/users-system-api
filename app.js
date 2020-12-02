@@ -27,5 +27,15 @@ app.use((req, res, next) => {
     res.send({ message: 'not found'}).status(404);
 });
 
+// error response
+app.use((error, req, res, next) => {
+    res.status(error.status) || 500;
+    res.json({
+        error: {
+            message: error.message
+        }
+    })
+});
+
 // start server
 server.listen(port, () => console.log(`Listening on ${port}`));
