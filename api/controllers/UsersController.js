@@ -11,7 +11,7 @@ const User = require('../models/userModel');
 // get all users
 exports.getUsers = (req, res, next) => {
     (async () => {
-        await res.send({ response: "users"}).status(200);
+        await res.send({ response: "users" }).status(200);
     })();
 };
 
@@ -19,6 +19,13 @@ exports.getUsers = (req, res, next) => {
 exports.addUser = (req, res, next) => {
     (async () => {
         try {
+
+            // exisitng email check
+            const existingEmailUser = await User.find({ email: req.body.email }).exec();
+
+            if (existingEmailUser.length > 0) {
+                throw new Error('Email exists');
+            }
 
             // create new user model instance
             const newUser = new User({
@@ -35,22 +42,27 @@ exports.addUser = (req, res, next) => {
             console.log(`New user created: ${savedUser}`)
             await res.status(201).send(savedUser);
 
-        // error handling
-        } catch(error) {
+            // error handling
+        } catch (error) {
 
             console.log(error);
-            
+
             const errorMessage = error.message;
-            
+
             // validation error
             if (error instanceof mongoose.Error.ValidationError) {
-                await res.status(400).send({message: errorMessage})
-            // all other errors
-            } else {
-                await res.status(500).send({message: errorMessage});
+                await res.status(400).send({ message: errorMessage })
             }
-            
-            
+            // existing email error
+            else if (errorMessage === 'Email exists') {
+                await res.status(409).send({ message: errorMessage })
+            }
+            // all other errors
+            else {
+                await res.status(500).send({ message: errorMessage });
+            }
+
+
         }
     })();
 }
