@@ -1,6 +1,6 @@
 // imports
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/users-system-db', {
+mongoose.connect(process.env.DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
