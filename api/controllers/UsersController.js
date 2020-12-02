@@ -9,13 +9,6 @@ const db = mongoose.connection;
 // models
 const User = require('../models/userModel');
 
-// get all users
-exports.getUsers = (req, res, next) => {
-    (async () => {
-        await res.send({ response: "users" }).status(200);
-    })();
-};
-
 // log a user in
 exports.logUserIn = (req, res, next) => {
     (async () => {
