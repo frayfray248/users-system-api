@@ -22,7 +22,7 @@ to sign the JWT tokens.
 
 2. Use `npm start` to run the system on the port specified in the .env file.
 
-You can log a user in and receive a JWT token using Postman by sending a POST request to the system with the following schema:
+You can log an existing user in and receive a JWT token using Postman by sending a POST request to the system with the following schema:
 
 
     username: {  
