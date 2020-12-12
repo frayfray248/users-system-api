@@ -126,3 +126,22 @@ exports.addUser = (req, res, next) => {
         }
     })();
 }
+
+exports.delete = (req, res, next) => {
+    ( async () => {
+        try {
+            const userId = req.params.id;
+
+            await User.remove({_id: userId});
+
+            res.status(200).json({
+                message: 'user deleted'
+            })
+        } catch(error) {
+            console.log(error);
+            res.status(500).json({
+                
+            })
+        }
+    })();
+}
