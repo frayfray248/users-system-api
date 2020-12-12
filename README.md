@@ -1,6 +1,9 @@
 # users-system-api
 
-This is a simple REST API for user login sessions.
+This is a simple REST API for user accounts. It has the following operations:
+- user creation
+- user sign in and JWT generation
+- user deletion
 
 ## Purpose
 
