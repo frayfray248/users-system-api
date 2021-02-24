@@ -1,13 +1,13 @@
+// dotenv
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
 //imports
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
 require('./db');
-
-// dotenv
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
 
 // routes
 const usersRoute = require('./api/routes/users');
