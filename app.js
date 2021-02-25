@@ -7,6 +7,9 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
+const morgon = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 require('./db');
 
 // routes
@@ -19,7 +22,12 @@ const port = process.env.PORT;
 const app = express();
 const server = http.createServer(app);
 
-// middleware
+// swagger documentation middleware
+const OAS = YAML.load('./users-system-doc.yml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(OAS));
+app.use(morgon('dev'));
+
+// body parser middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
