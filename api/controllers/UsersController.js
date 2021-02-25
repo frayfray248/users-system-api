@@ -134,7 +134,14 @@ exports.addUser = (req, res, next) => {
 exports.delete = (req, res, next) => {
     ( async () => {
         try {
-            const userId = req.params.id;
+            
+            const userId = req.params.userId;
+
+            // find user
+            const user = await User.findById(userId).exec();
+
+            // fail request if no user found
+            if (!user) throw new Error('User not found');
 
             // delete user
             await User.remove({_id: userId});
@@ -147,10 +154,17 @@ exports.delete = (req, res, next) => {
         } catch(error) {
 
             console.log(error);
-            
-            res.status(500).json({
-                
-            })
+
+            const errorMessage = error.message;
+
+            // user not found
+            if (errorMessage === 'User not found') {
+                await res.status(404).send({ message: errorMessage });
+            }
+            // all other errors
+            else {
+                await res.status(500).send({ message: serverErrorMsg });
+            }
         }
     })();
 }
