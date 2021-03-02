@@ -1,11 +1,12 @@
 {
   "name": "users-system-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An REST API for handling account creation and sesssions in a system",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.11.1"
+    "mongoose": "^5.11.1",
+    "morgan": "^1.10.0",
+    "swagger-ui-express": "^4.1.6",
+    "yamljs": "^0.3.0"
   }
 }

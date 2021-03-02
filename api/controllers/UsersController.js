@@ -9,16 +9,21 @@ const db = mongoose.connection;
 // models
 const User = require('../models/userModel');
 
+// server error msg
+const serverErrorMsg = "Internal server error";
+
 // log a user in
 exports.logUserIn = (req, res, next) => {
     (async () => {
         try {
+
             // find user
             const user = await User.find({
                 email: req.body.email,
                 username: req.body.username
             });
 
+            // fail authorization if no matching username
             if (user.length < 1) throw new Error('Authorization failed');
 
             // password check
@@ -38,27 +43,26 @@ exports.logUserIn = (req, res, next) => {
                 }
             );
 
-            // authorization successful
-            // send token to client
+            // succeed authorization and send token
             res.status(200).send({ 
                 message: "authorization successful",
                 token: token
             })
 
-            // error handling
+        // error handling
         } catch (error) {
 
             console.log(error);
 
             const errorMessage = error.message;
 
-            // failed authorization error
+            // failed authorization
             if (errorMessage === 'Authorization failed') {
                 await res.status(401).send({ message: errorMessage })
             }
             // all other errors
             else {
-                await res.status(500).send({ message: errorMessage });
+                await res.status(500).send({ message: serverErrorMsg });
             }
 
         }
@@ -106,20 +110,20 @@ exports.addUser = (req, res, next) => {
 
             const errorMessage = error.message;
 
-            // validation error
+            // invalidation
             if (error instanceof mongoose.Error.ValidationError) {
                 await res.status(400).send({ message: errorMessage })
             }
-            // existing email error
-            else if (errorMessage === 'Email exists') {
+            // existing email or username
+            else if (errorMessage === 'Email exists' || errorMessage === 'Username exists') {
                 await res.status(409).send({ message: errorMessage })
-                // failed authorization error
+                // failed authorization
             } else if (errorMessage === 'Authorization failed') {
                 await res.status(401).send({ message: errorMessage })
             }
             // all other errors
             else {
-                await res.status(500).send({ message: errorMessage });
+                await res.status(500).send({ message: serverErrorMsg });
             }
 
 
@@ -130,18 +134,37 @@ exports.addUser = (req, res, next) => {
 exports.delete = (req, res, next) => {
     ( async () => {
         try {
-            const userId = req.params.id;
+            
+            const userId = req.params.userId;
 
+            // find user
+            const user = await User.findById(userId).exec();
+
+            // fail request if no user found
+            if (!user) throw new Error('User not found');
+
+            // delete user
             await User.remove({_id: userId});
 
+            // successfuly deleted user
             res.status(200).json({
-                message: 'user deleted'
+                message: 'User deleted'
             })
+
         } catch(error) {
+
             console.log(error);
-            res.status(500).json({
-                
-            })
+
+            const errorMessage = error.message;
+
+            // user not found
+            if (errorMessage === 'User not found') {
+                await res.status(404).send({ message: errorMessage });
+            }
+            // all other errors
+            else {
+                await res.status(500).send({ message: serverErrorMsg });
+            }
         }
     })();
 }

@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: 'users-system-api'
+  description: 'A REST API for a users system'
+  version: 1.1.0
+
+servers:
+  - url: https://frayfray-users-system-api.herokuapp.com/
+    description: Production server
+
+components:
+  schemas:
+    User:
+      properties:
+        username:
+          type: string
+          minimum: 3
+          maximum: 20
+        email:
+          type: string
+          pattern: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+        password:
+          type: string
+          minimum: 6
+      required:
+        - username
+        - email
+        - password
+paths:
+  /users/signUp:
+    post:
+      summary: Creates a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Returns the created user 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Bad or malformed request
+        '409':
+          description: Email already exists
+        '500':
+          description: Internal server error
+  /users/login:
+    post:
+      summary: Logs a user in
+      description: Logs a user in and returns a JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Authorization successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '401':
+          description: Authorization failed
+        '500':
+          description: Internal server error
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+        description: The id of the user
+    delete:
+      summary: Deletes a user
+      description: Deletes a user with a specified ID
+      responses:
+        '200':
+          description: User deleted
+        '500':
+          description: Internal server error
