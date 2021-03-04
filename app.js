@@ -7,6 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
+const cors = require('./cors');
 const morgon = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -32,17 +33,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // cors
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-        'Access-Control-Allow-Headers', 
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-        return res.status(200).json({});
-    }
-    next();
-});
+app.use(cors);
 
 // users route
 app.use('/users', usersRoute);
