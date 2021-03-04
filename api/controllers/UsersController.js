@@ -9,8 +9,10 @@ const db = mongoose.connection;
 // models
 const User = require('../models/userModel');
 
-// server error msg
-const serverErrorMsg = "Internal server error";
+// error handler function
+const handleError = async (code, message, res) => {
+    res.status(code).json({ message })
+}
 
 // log a user in
 exports.logUserIn = (req, res, next) => {
@@ -23,46 +25,51 @@ exports.logUserIn = (req, res, next) => {
                 username: req.body.username
             });
 
-            // fail authorization if no matching username
-            if (user.length < 1) throw new Error('Authorization failed');
+            // no user found check
+            if (user.length < 1) throw ({ code: 401, message: 'Authorization failed' });
 
             // password check
             const auth = await bcrypt.compare(req.body.password, user[0].password);
 
-            if (!auth) throw new Error('Authorization failed');
+            if (!auth) throw ({ code: 401, message: 'Authorization failed' });
 
             // json token
-            const token = await jwt.sign({
+            const jwtPayLoad = {
                 username: user[0].username,
                 email: user[0].email,
                 userId: user[0]._id
-            },
+            }
+
+            const token = await jwt.sign(
+                jwtPayLoad,
                 process.env.JWT_KEY,
-                {
-                    expiresIn: "1h"
-                }
+                { expiresIn: "1h" }
             );
 
             // succeed authorization and send token
-            res.status(200).send({ 
+            res.status(200).send({
                 message: "authorization successful",
                 token: token
             })
 
-        // error handling
+            // error handling
         } catch (error) {
 
-            console.log(error);
-
-            const errorMessage = error.message;
+            // error message and log
+            const message = error.message;
+            console.log(message);
 
             // failed authorization
-            if (errorMessage === 'Authorization failed') {
-                await res.status(401).send({ message: errorMessage })
+            if (message === 'Authorization failed') {
+                await handleError(error.code, message, res)
+            }
+            // custom errors
+            else if (error.code && message) {
+                await handleError(error.code, message, res)
             }
             // all other errors
             else {
-                await res.status(500).send({ message: serverErrorMsg });
+                next(error);
             }
 
         }
@@ -77,16 +84,12 @@ exports.addUser = (req, res, next) => {
             // exisitng email check
             const existingEmailUser = await User.find({ email: req.body.email }).exec();
 
-            if (existingEmailUser.length > 0) {
-                throw new Error('Email exists');
-            }
+            if (existingEmailUser.length > 0) throw { code: 409, message: 'Email exists' }
 
             // exisitng username check
             const existingUsernameUser = await User.find({ username: req.body.username }).exec();
 
-            if (existingUsernameUser.length > 0) {
-                throw new Error('Username exists');
-            }
+            if (existingUsernameUser.length > 0) throw { code: 409, message: 'Username exists' }
 
             // create new user model instance
             const newUser = new User({
@@ -106,24 +109,21 @@ exports.addUser = (req, res, next) => {
             // error handling
         } catch (error) {
 
-            console.log(error);
-
-            const errorMessage = error.message;
+            // error message and log
+            const message = error.message;
+            console.log(message);
 
             // invalidation
             if (error instanceof mongoose.Error.ValidationError) {
-                await res.status(400).send({ message: errorMessage })
+                await handleError(400, message, res)
             }
-            // existing email or username
-            else if (errorMessage === 'Email exists' || errorMessage === 'Username exists') {
-                await res.status(409).send({ message: errorMessage })
-                // failed authorization
-            } else if (errorMessage === 'Authorization failed') {
-                await res.status(401).send({ message: errorMessage })
+            // custom errors
+            else if (error.code && message) {
+                await handleError(error.code, message, res)
             }
             // all other errors
             else {
-                await res.status(500).send({ message: serverErrorMsg });
+                next(error)
             }
 
 
@@ -132,38 +132,38 @@ exports.addUser = (req, res, next) => {
 }
 
 exports.delete = (req, res, next) => {
-    ( async () => {
+    (async () => {
         try {
-            
+
             const userId = req.params.userId;
 
             // find user
             const user = await User.findById(userId).exec();
 
-            // fail request if no user found
-            if (!user) throw new Error('User not found');
+            // no user found check
+            if (!user) throw { code: 404, message: 'User not found'};
 
             // delete user
-            await User.remove({_id: userId});
+            await User.remove({ _id: userId });
 
-            // successfuly deleted user
+            // success
             res.status(200).json({
                 message: 'User deleted'
             })
 
-        } catch(error) {
+        } catch (error) {
 
-            console.log(error);
+            // error message and log
+            const message = error.message;
+            console.log(message);
 
-            const errorMessage = error.message;
-
-            // user not found
-            if (errorMessage === 'User not found') {
-                await res.status(404).send({ message: errorMessage });
+            // custom errors
+            if (error.code && message) {
+                await handleError(error.code, message, res)
             }
             // all other errors
             else {
-                await res.status(500).send({ message: serverErrorMsg });
+                next(error)
             }
         }
     })();
