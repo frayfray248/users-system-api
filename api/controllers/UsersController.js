@@ -21,7 +21,6 @@ exports.logUserIn = (req, res, next) => {
 
             // find user
             const user = await User.find({
-                email: req.body.email,
                 username: req.body.username
             });
 

@@ -26,6 +26,19 @@ components:
         - username
         - email
         - password
+    Login:
+      properties:
+        username:
+          type: string
+          minimum: 3
+          maximum: 20
+        password:
+          type: string
+          minimum: 6
+      required:
+        - username
+        - email
+        - password
 paths:
   /users/signUp:
     post:
@@ -58,7 +71,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/Login'
       responses:
         '200':
           description: Authorization successful
