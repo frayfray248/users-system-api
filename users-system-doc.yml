@@ -100,7 +100,7 @@ paths:
       summary: Deletes a user
       description: Deletes a user with a specified ID
       responses:
-        '200':
-          description: User deleted
+        '204':
+          description: No Content (User deleted)
         '500':
           description: Internal server error

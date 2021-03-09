@@ -146,9 +146,7 @@ exports.delete = (req, res, next) => {
             await User.remove({ _id: userId });
 
             // success
-            res.status(200).json({
-                message: 'User deleted'
-            })
+            res.status(204).send();
 
         } catch (error) {
 
