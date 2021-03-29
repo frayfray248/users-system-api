@@ -21,7 +21,6 @@ exports.logUserIn = (req, res, next) => {
 
             // find user
             const user = await User.find({
-                email: req.body.email,
                 username: req.body.username
             });
 
@@ -147,9 +146,7 @@ exports.delete = (req, res, next) => {
             await User.remove({ _id: userId });
 
             // success
-            res.status(200).json({
-                message: 'User deleted'
-            })
+            res.status(204).send();
 
         } catch (error) {
 
